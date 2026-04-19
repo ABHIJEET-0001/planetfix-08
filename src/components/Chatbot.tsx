@@ -16,10 +16,12 @@ export function Chatbot() {
   
   const [messages, setMessages] = useState<{role: 'user' | 'model', text: string}[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('chatbot_history');
-      return saved ? JSON.parse(saved) : [
-        { role: 'model', text: "Hi! I'm PlanetFix AI 🌱. How can I help you reduce your carbon footprint today?" }
-      ];
+      try {
+        const saved = localStorage.getItem('chatbot_history');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        console.warn("Could not parse chatbot history:", e);
+      }
     }
     return [{ role: 'model', text: "Hi! I'm PlanetFix AI 🌱. How can I help you reduce your carbon footprint today?" }];
   });
