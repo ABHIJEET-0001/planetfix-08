@@ -42,8 +42,8 @@ export function AppSidebar() {
           </motion.div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="font-display text-lg font-bold leading-none">EcoTrack</span>
-              <span className="text-[10px] font-medium tracking-widest text-muted-foreground">AI</span>
+              <span className="font-display text-lg font-bold leading-none">PlanetFix</span>
+              <span className="text-[10px] font-medium tracking-widest text-muted-foreground">ECO AI</span>
             </div>
           )}
         </div>

@@ -50,7 +50,7 @@ export const testimonials = [
   {
     name: "Sarah Chen",
     role: "Sustainability Lead, Helio",
-    quote: "EcoTrack AI made my team's emission reporting effortless. The dashboards feel like Apple-grade.",
+    quote: "PlanetFix made my team's emission reporting effortless. The dashboards feel like Apple-grade.",
     avatar: "SC",
   },
   {
@@ -69,7 +69,7 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: "How does EcoTrack AI calculate my carbon footprint?",
+    q: "How does PlanetFix calculate my carbon footprint?",
     a: "We use peer-reviewed emission factors combined with your transport, energy, food and shopping inputs to produce a precise, personalized estimate.",
   },
   {

@@ -24,7 +24,7 @@ export default function Landing() {
               <div className="h-9 w-9 rounded-xl gradient-bg flex items-center justify-center glow-primary">
                 <Leaf className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-display font-bold text-lg">EcoTrack <span className="gradient-text">AI</span></span>
+              <span className="font-display font-bold text-lg">Planet<span className="gradient-text">Fix</span></span>
             </Link>
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
               <a href="#features" className="hover:text-foreground transition">Features</a>
@@ -104,7 +104,7 @@ export default function Landing() {
             <div className="text-center max-w-2xl mx-auto mb-16">
               <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Why it matters</p>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-balance">A planet measured is a planet saved.</h2>
-              <p className="mt-4 text-muted-foreground text-lg">Every kilo of CO₂ avoided counts. EcoTrack turns invisible emissions into a story you can act on.</p>
+              <p className="mt-4 text-muted-foreground text-lg">Every kilo of CO₂ avoided counts. PlanetFix turns invisible emissions into a story you can act on.</p>
             </div>
           </Reveal>
           <div className="grid md:grid-cols-3 gap-6">
@@ -263,7 +263,7 @@ export default function Landing() {
             <div className="h-8 w-8 rounded-lg gradient-bg flex items-center justify-center">
               <Leaf className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold">EcoTrack <span className="gradient-text">AI</span></span>
+            <span className="font-display font-bold">Planet<span className="gradient-text">Fix</span></span>
             <span className="text-sm text-muted-foreground ml-2">© 2025</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">

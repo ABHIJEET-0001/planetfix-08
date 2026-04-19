@@ -18,7 +18,7 @@ export default function Profile() {
       <Reveal>
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-bold">Profile & Settings</h1>
-          <p className="text-muted-foreground mt-1">Personalize your EcoTrack experience.</p>
+          <p className="text-muted-foreground mt-1">Personalize your PlanetFix experience.</p>
         </div>
       </Reveal>
 
@@ -30,7 +30,7 @@ export default function Profile() {
           </motion.div>
           <div className="flex-1 text-center sm:text-left">
             <h2 className="font-display text-2xl font-bold">Alex Kim</h2>
-            <p className="text-muted-foreground">alex.kim@ecotrack.ai</p>
+            <p className="text-muted-foreground">alex.kim@planetfix.app</p>
             <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
               <span className="text-xs font-semibold px-2 py-1 rounded-md bg-primary/10 text-primary">🌱 Green Starter</span>
               <span className="text-xs font-semibold px-2 py-1 rounded-md bg-secondary/10 text-secondary">28-day streak</span>
@@ -52,7 +52,7 @@ export default function Profile() {
             </div>
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="alex.kim@ecotrack.ai" className="mt-1.5 rounded-xl" />
+              <Input id="email" type="email" defaultValue="alex.kim@planetfix.app" className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label htmlFor="loc">Location</Label>
