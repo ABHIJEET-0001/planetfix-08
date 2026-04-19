@@ -2,8 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
+if (!apiKey) {
+  console.warn("Gemini API Key missing. Chatbot will be disabled.");
+}
+
 // Initialize the API using the key from env
-export const genAI = new GoogleGenerativeAI(apiKey || "");
+export const genAI = new GoogleGenerativeAI(apiKey || "dummy-key");
 
 export const getEcoChatSession = () => {
   const model = genAI.getGenerativeModel({
