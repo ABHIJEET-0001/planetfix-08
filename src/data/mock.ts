@@ -31,10 +31,10 @@ export const categoryData = [
 ];
 
 export const recommendations = [
-  { title: "Switch to public transport 2 days/week", impact: "−18 kg CO₂", icon: "🚌" },
-  { title: "Reduce red meat consumption", impact: "−12 kg CO₂", icon: "🥗" },
-  { title: "Unplug devices when idle", impact: "−6 kg CO₂", icon: "🔌" },
-  { title: "Buy local produce this week", impact: "−4 kg CO₂", icon: "🥕" },
+  { id: "transit", title: "Switch to public transport 2 days/week", impact: "−18 kg CO₂", kg: 18, icon: "🚌" },
+  { id: "meat", title: "Reduce red meat consumption", impact: "−12 kg CO₂", kg: 12, icon: "🥗" },
+  { id: "unplug", title: "Unplug devices when idle", impact: "−6 kg CO₂", kg: 6, icon: "🔌" },
+  { id: "local", title: "Buy local produce this week", impact: "−4 kg CO₂", kg: 4, icon: "🥕" },
 ];
 
 export const badges = [

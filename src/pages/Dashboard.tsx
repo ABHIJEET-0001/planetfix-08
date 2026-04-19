@@ -7,7 +7,8 @@ import { Leaf, TrendingDown, Target, Trophy, ArrowUpRight, Sparkles, TreePine } 
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Reveal } from "@/components/Reveal";
 import { Progress } from "@/components/ui/progress";
-import { weeklyData, monthlyData, categoryData, recommendations, badges } from "@/data/mock";
+import { weeklyData, monthlyData, categoryData, badges } from "@/data/mock";
+import { AIRecommendations } from "@/components/AIRecommendations";
 
 const stats = [
   { label: "Total this month", value: 128, suffix: " kg", icon: Leaf, change: "-8.5%", color: "primary" },
@@ -137,29 +138,7 @@ export default function Dashboard() {
 
         {/* AI Recommendations */}
         <Reveal delay={0.25}>
-          <div className="glass rounded-2xl p-6 shadow-soft h-full">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <h3 className="font-display text-lg font-bold">AI Recommendations</h3>
-            </div>
-            <p className="text-xs text-muted-foreground mb-4">Personalized actions</p>
-            <div className="space-y-3">
-              {recommendations.map((r, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ x: 4 }}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors cursor-pointer"
-                >
-                  <span className="text-2xl">{r.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm truncate">{r.title}</div>
-                    <div className="text-xs text-primary font-semibold">{r.impact}</div>
-                  </div>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          <AIRecommendations />
         </Reveal>
       </div>
 
