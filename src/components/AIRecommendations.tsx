@@ -1,24 +1,35 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowUpRight, Check, RotateCcw } from "lucide-react";
-import { recommendations } from "@/data/mock";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 
 type Confetti = { id: number; x: number; y: number; emoji: string; dx: number; dy: number };
+type Recommendation = { id: string; title: string; impact: string; kg: number; icon: string };
 
 const CELEBRATE_EMOJIS = ["🎉", "✨", "🌱", "💚", "🌍", "⭐"];
 
 export function AIRecommendations() {
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [committed, setCommitted] = useState<Record<string, boolean>>({});
   const [confetti, setConfetti] = useState<Confetti[]>([]);
 
+  useEffect(() => {
+    async function fetchData() {
+      const { data } = await supabase.from('recommendations').select('*').order('id');
+      if (data) setRecommendations(data);
+    }
+    fetchData();
+  }, []);
+
   const totalKg = useMemo(
     () => recommendations.reduce((sum, r) => sum + r.kg, 0),
-    []
+    [recommendations]
   );
   const savedKg = useMemo(
     () => recommendations.reduce((sum, r) => (committed[r.id] ? sum + r.kg : sum), 0),
-    [committed]
+    [committed, recommendations]
   );
   const progress = Math.round((savedKg / totalKg) * 100);
   const committedCount = Object.values(committed).filter(Boolean).length;
@@ -40,7 +51,7 @@ export function AIRecommendations() {
 
   const handleClick = (
     e: React.MouseEvent<HTMLDivElement>,
-    r: (typeof recommendations)[number]
+    r: Recommendation
   ) => {
     const isCommitted = !!committed[r.id];
     setCommitted((prev) => ({ ...prev, [r.id]: !isCommitted }));

@@ -11,6 +11,8 @@ import Calculator from "./pages/Calculator";
 import Goals from "./pages/Goals";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
               <Route path="/goals" element={<Goals />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogPost />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

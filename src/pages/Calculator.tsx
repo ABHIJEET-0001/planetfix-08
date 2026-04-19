@@ -4,6 +4,7 @@ import { Car, Home, UtensilsCrossed, ShoppingBag, Sparkles, RefreshCw } from "lu
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Reveal } from "@/components/Reveal";
+import { supabase } from "@/lib/supabase";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { toast } from "sonner";
 
@@ -18,17 +19,28 @@ export default function Calculator() {
   const [values, setValues] = useState<Record<string, number>>({
     transport: 120, electricity: 320, food: 8, shopping: 400,
   });
-  const [result, setResult] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const calculate = () => {
-    const total = sections.reduce((sum, s) => sum + values[s.key] * s.factor, 0);
-    setResult(total);
-    toast.success("Footprint calculated!", { description: `${total.toFixed(1)} kg CO₂/month` });
+  // Real-time calculation
+  const total = sections.reduce((sum, s) => sum + values[s.key] * s.factor, 0);
+
+  const saveReport = async () => {
+    setIsSaving(true);
+    const monthStr = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    const { error } = await supabase.from('reports').insert([
+      { month: monthStr, co2: Math.round(total), change: 0, status: 'Draft' }
+    ]);
+    setIsSaving(false);
+    
+    if (error) {
+      toast.error(`Database Error: ${error.message}`);
+    } else {
+      toast.success("Footprint saved to Reports!", { description: `${total.toFixed(1)} kg CO₂/month` });
+    }
   };
 
   const reset = () => {
     setValues({ transport: 120, electricity: 320, food: 8, shopping: 400 });
-    setResult(null);
   };
 
   return (
@@ -70,8 +82,8 @@ export default function Calculator() {
 
           <Reveal delay={0.3}>
             <div className="flex gap-3">
-              <Button onClick={calculate} variant="hero" size="lg" className="flex-1 rounded-2xl h-14 text-base">
-                <Sparkles className="h-5 w-5 mr-2" /> Calculate Footprint
+              <Button onClick={saveReport} disabled={isSaving} variant="hero" size="lg" className="flex-1 rounded-2xl h-14 text-base hover:scale-[1.02] transition-all shadow-glow">
+                <Sparkles className="h-5 w-5 mr-2" /> {isSaving ? "Saving..." : "Save to Reports"}
               </Button>
               <Button onClick={reset} variant="outline" size="lg" className="rounded-2xl h-14">
                 <RefreshCw className="h-5 w-5" />
@@ -86,62 +98,52 @@ export default function Calculator() {
             <div className="sticky top-24 glass rounded-3xl p-8 shadow-elegant overflow-hidden relative">
               <div className="absolute inset-0 bg-radial-glow opacity-50" />
               <div className="relative">
-                <div className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Your monthly footprint</div>
-                <AnimatePresence mode="wait">
-                  {result !== null ? (
-                    <motion.div
-                      key="result"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ type: "spring", duration: 0.6 }}
-                    >
-                      <div className="font-display text-6xl font-bold gradient-text mt-3">
-                        <AnimatedNumber value={result} decimals={1} />
-                      </div>
-                      <div className="text-lg font-semibold text-muted-foreground">kg CO₂ / month</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Your real-time footprint</div>
+                <div className="font-display text-6xl font-bold gradient-text mt-3">
+                  <AnimatedNumber value={total} decimals={1} />
+                </div>
+                <div className="text-lg font-semibold text-muted-foreground">kg CO₂ / month</div>
 
-                      <div className="mt-6 space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Annual estimate</span>
-                          <span className="font-semibold">{(result * 12).toFixed(0)} kg</span>
+                <div className="mt-8 pt-6 border-t border-border/60">
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-4">Monthly Usage Summary</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {sections.map(s => (
+                      <div key={s.key} className="bg-muted/30 rounded-xl p-3 border border-border/40">
+                        <div className="flex items-center gap-2 mb-1">
+                          <s.icon className={`h-3 w-3 text-${s.color}`} />
+                          <span className="text-[10px] font-medium text-muted-foreground">{s.label}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Trees needed/yr</span>
-                          <span className="font-semibold">{Math.ceil(result * 12 / 21)} 🌳</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">vs avg person</span>
-                          <span className="font-semibold text-primary">
-                            {result < 350 ? `${Math.round((1 - result / 350) * 100)}% lower` : `${Math.round((result / 350 - 1) * 100)}% higher`}
-                          </span>
+                        <div className="text-sm font-bold">
+                          {values[s.key as keyof typeof values]} 
+                          <span className="text-[10px] ml-1 opacity-60">{s.unit.split('/')[0]}</span>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
 
-                      <div className="mt-6 p-4 rounded-2xl bg-primary/10 border border-primary/20">
-                        <div className="flex items-start gap-2">
-                          <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                          <div className="text-sm">
-                            <span className="font-semibold">AI tip: </span>
-                            <span className="text-muted-foreground">
-                              {result > 300 ? "Start with cutting 1 weekly car commute — biggest impact, lowest effort." : "Great work! Maintain habits and consider switching to renewable energy."}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <div className="font-display text-6xl font-bold text-muted-foreground/40 mt-3">—</div>
-                      <p className="text-sm text-muted-foreground mt-3">
-                        Adjust your habits and hit <span className="font-semibold text-foreground">Calculate</span> to see your real impact.
-                      </p>
-                      <div className="mt-8 h-40 rounded-2xl bg-muted/40 border border-dashed border-border flex items-center justify-center text-4xl">
-                        🌍
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <div className="mt-6 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Annual estimate</span>
+                    <span className="font-semibold">{(total * 12).toFixed(0)} kg</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Trees needed/yr</span>
+                    <span className="font-semibold">{Math.ceil(total * 12 / 21)} 🌳</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                  <div className="flex items-start gap-2">
+                    <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <div className="text-sm">
+                      <span className="font-semibold">AI tip: </span>
+                      <span className="text-muted-foreground">
+                        {total > 300 ? "Start with cutting 1 weekly car commute — biggest impact, lowest effort." : "Great work! Maintain habits and consider switching to renewable energy."}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Reveal>

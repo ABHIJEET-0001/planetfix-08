@@ -1,22 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Target, Flame, Trophy, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Reveal } from "@/components/Reveal";
-import { badges } from "@/data/mock";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const goals = [
-  { name: "Reduce monthly CO₂ by 20%", current: 14, target: 20, unit: "%" },
-  { name: "Walk/bike 4 days a week", current: 3, target: 4, unit: " days" },
-  { name: "Plant-based meals/week", current: 9, target: 12, unit: " meals" },
-  { name: "Reduce electricity by 15%", current: 8, target: 15, unit: "%" },
-];
+type Goal = { id: number; name: string; current: number; target: number; unit: string };
+type Badge = { id: number; name: string; earned: boolean; icon: string };
 
 export default function Goals() {
   const [target, setTarget] = useState([20]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  
+  const [newGoal, setNewGoal] = useState({ name: "", target: 100, unit: "km" });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleAddGoal = async () => {
+    if (!newGoal.name) return;
+    const { data, error } = await supabase.from('goals').insert([
+      { name: newGoal.name, current: 0, target: newGoal.target, unit: newGoal.unit }
+    ]).select();
+    
+    if (error) {
+      toast.error("Error saving goal: " + error.message);
+    } else if (data) {
+      setGoals([...goals, data[0]]);
+      setIsDialogOpen(false);
+      setNewGoal({ name: "", target: 100, unit: "km" });
+      toast.success("Goal added successfully!");
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      const [goalsRes, badgesRes] = await Promise.all([
+        supabase.from('goals').select('*').order('id'),
+        supabase.from('badges').select('*').order('id')
+      ]);
+      if (goalsRes.error) {
+        toast.error("Failed to load goals");
+      } else if (goalsRes.data) {
+        setGoals(goalsRes.data);
+      }
+      if (badgesRes.data) {
+        setBadges(badgesRes.data);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -26,9 +64,40 @@ export default function Goals() {
             <h1 className="font-display text-3xl md:text-4xl font-bold">Goals & Achievements</h1>
             <p className="text-muted-foreground mt-1">Set targets, build streaks, earn badges.</p>
           </div>
-          <Button variant="hero" className="rounded-xl">
-            <Plus className="h-4 w-4 mr-1" /> New goal
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="hero" className="rounded-xl shadow-glow transition-all hover:scale-105">
+                <Plus className="h-4 w-4 mr-1" /> New goal
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] glass border border-primary/20">
+              <DialogHeader>
+                <DialogTitle className="font-display text-2xl text-primary">Create new goal</DialogTitle>
+                <DialogDescription>
+                  Set a quantifiable target to focus on this month.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Goal objective</Label>
+                  <Input id="name" value={newGoal.name} onChange={e => setNewGoal({...newGoal, name: e.target.value})} placeholder="e.g. Walk to work 10 times" className="bg-background/50" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="grid gap-2">
+                      <Label htmlFor="target">Target Limit</Label>
+                      <Input id="target" type="number" value={newGoal.target} onChange={e => setNewGoal({...newGoal, target: Number(e.target.value)})} className="bg-background/50" />
+                   </div>
+                   <div className="grid gap-2">
+                      <Label htmlFor="unit">Unit (e.g. reps, kg)</Label>
+                      <Input id="unit" value={newGoal.unit} onChange={e => setNewGoal({...newGoal, unit: e.target.value})} placeholder="km" className="bg-background/50" />
+                   </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleAddGoal} variant="hero" className="w-full">Save Goal</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </Reveal>
 

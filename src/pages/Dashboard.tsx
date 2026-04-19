@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer,
@@ -7,8 +8,9 @@ import { Leaf, TrendingDown, Target, Trophy, ArrowUpRight, Sparkles, TreePine } 
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Reveal } from "@/components/Reveal";
 import { Progress } from "@/components/ui/progress";
-import { weeklyData, monthlyData, categoryData, badges } from "@/data/mock";
 import { AIRecommendations } from "@/components/AIRecommendations";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const stats = [
   { label: "Total this month", value: 128, suffix: " kg", icon: Leaf, change: "-8.5%", color: "primary" },
@@ -17,7 +19,40 @@ const stats = [
   { label: "Goal Progress", value: 64, suffix: "%", icon: Target, change: "On track", color: "primary" },
 ];
 
+type WeeklyData = { id: number; day: string; co2: number };
+type MonthlyData = { id: number; month: string; co2: number };
+type CategoryData = { id: number; name: string; value: number; color: string };
+type Badge = { id: number; name: string; earned: boolean; icon: string };
+
 export default function Dashboard() {
+  const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [weeklyRes, monthlyRes, categoryRes, badgesRes] = await Promise.all([
+        supabase.from('weekly_data').select('*').order('id'),
+        supabase.from('monthly_data').select('*').order('id'),
+        supabase.from('category_data').select('*').order('id'),
+        supabase.from('badges').select('*').order('id')
+      ]);
+      
+      const errors = [weeklyRes.error, monthlyRes.error, categoryRes.error, badgesRes.error].filter(Boolean);
+      if (errors.length > 0) {
+        console.error("Dashboard DB errors:", errors);
+        errors.forEach(e => toast.error(`DB Error: ${e?.message}`));
+      }
+
+      if (weeklyRes.data) setWeeklyData(weeklyRes.data);
+      if (monthlyRes.data) setMonthlyData(monthlyRes.data);
+      if (categoryRes.data) setCategoryData(categoryRes.data);
+      if (badgesRes.data) setBadges(badgesRes.data);
+    }
+    fetchData();
+  }, []);
+
   return (
     <div className="space-y-6">
       <Reveal>

@@ -1,6 +1,6 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Calculator, Target, FileText, Settings, Leaf, Home } from "lucide-react";
+import { LayoutDashboard, Calculator, Target, FileText, Settings, Leaf, Home, BookOpen } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +21,7 @@ const items = [
   { title: "Calculator", url: "/calculator", icon: Calculator },
   { title: "Goals", url: "/goals", icon: Target },
   { title: "Reports", url: "/reports", icon: FileText },
+  { title: "Knowledge Base", url: "/blog", icon: BookOpen },
   { title: "Profile", url: "/profile", icon: Settings },
 ];
 

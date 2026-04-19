@@ -9,10 +9,28 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Reveal } from "@/components/Reveal";
 import { Globe3D } from "@/components/Globe3D";
 import { useTheme } from "@/hooks/use-theme";
-import { testimonials, faqs } from "@/data/mock";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+
+type Testimonial = { id: number; name: string; role: string; quote: string; avatar: string };
+type FAQ = { id: number; q: string; a: string };
 
 export default function Landing() {
   const { theme, toggle } = useTheme();
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [testRes, faqsRes] = await Promise.all([
+        supabase.from('testimonials').select('*').order('id'),
+        supabase.from('faqs').select('*').order('id')
+      ]);
+      if (testRes.data) setTestimonials(testRes.data);
+      if (faqsRes.data) setFaqs(faqsRes.data);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden">
