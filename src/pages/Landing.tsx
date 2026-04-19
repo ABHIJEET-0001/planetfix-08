@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Reveal } from "@/components/Reveal";
+import { Globe3D } from "@/components/Globe3D";
 import { useTheme } from "@/hooks/use-theme";
 import { testimonials, faqs } from "@/data/mock";
 
@@ -88,56 +89,9 @@ export default function Landing() {
               </Reveal>
             </div>
 
-            {/* Animated Earth */}
+            {/* 3D Interactive Globe */}
             <Reveal delay={0.2}>
-              <div className="relative aspect-square max-w-lg mx-auto">
-                <div className="absolute inset-0 rounded-full gradient-bg blur-3xl opacity-40 animate-pulse-glow" />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-8 rounded-full border-2 border-dashed border-primary/30"
-                />
-                <motion.div
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-16 rounded-full border border-secondary/30"
-                />
-                <motion.div
-                  animate={{ y: [0, -16, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute inset-0 flex items-center justify-center"
-                >
-                  <div className="relative h-64 w-64 md:h-80 md:w-80 rounded-full overflow-hidden shadow-elegant"
-                    style={{
-                      background: "radial-gradient(circle at 30% 30%, hsl(200 95% 65%), hsl(200 95% 35%) 40%, hsl(160 50% 20%) 80%)",
-                      boxShadow: "inset -30px -30px 80px rgba(0,0,0,0.4), 0 30px 80px hsl(152 76% 38% / 0.5)",
-                    }}>
-                    <div className="absolute inset-0 opacity-70" style={{
-                      background: "radial-gradient(ellipse 40% 30% at 25% 40%, hsl(120 60% 30%), transparent 60%), radial-gradient(ellipse 30% 25% at 70% 55%, hsl(120 50% 35%), transparent 60%), radial-gradient(ellipse 25% 20% at 50% 75%, hsl(120 60% 30%), transparent 60%)",
-                    }} />
-                    <div className="absolute inset-0" style={{
-                      background: "radial-gradient(circle at 25% 25%, hsl(0 0% 100% / 0.3), transparent 50%)",
-                    }} />
-                  </div>
-                </motion.div>
-                {[
-                  { icon: "🌱", x: "8%", y: "20%", d: 0 },
-                  { icon: "💧", x: "85%", y: "30%", d: 1 },
-                  { icon: "☀️", x: "10%", y: "75%", d: 2 },
-                  { icon: "🌳", x: "82%", y: "78%", d: 1.5 },
-                ].map((b, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1, y: [0, -10, 0] }}
-                    transition={{ delay: 0.5 + b.d * 0.2, duration: 4, y: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
-                    style={{ left: b.x, top: b.y }}
-                    className="absolute h-12 w-12 rounded-2xl glass flex items-center justify-center text-xl shadow-elegant"
-                  >
-                    {b.icon}
-                  </motion.div>
-                ))}
-              </div>
+              <Globe3D />
             </Reveal>
           </div>
         </div>
